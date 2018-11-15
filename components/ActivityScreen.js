@@ -3,6 +3,7 @@ import {Platform, StyleSheet, Text, View, Button} from 'react-native';
 import TimerMixin from 'react-timer-mixin';
 // import FitService from '../services/fitService';
 import { NativeEventEmitter, NativeModules } from 'react-native';
+import {Modal, TouchableHighlight, Alert} from 'react-native';
 
 class ActivityScreen extends React.Component {
     

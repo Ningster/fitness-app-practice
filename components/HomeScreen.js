@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, Button} from 'react-native';
+import ActivityPopup from './ActivityPopup';
 
 const instructions = Platform.select({
     ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -30,9 +31,17 @@ const styles = StyleSheet.create({
 type Props = {};
 
 class HomeScreen extends React.Component<Props> {
+
     static navigationOptions = {
       title: '首頁',
     };
+
+    state = {showActivityPopup: false}
+
+    closePopup = () => {
+        this.setState({showActivityPopup: false});
+    }
+
     render() {
         const { navigate } = this.props.navigation;
         return (
@@ -40,12 +49,19 @@ class HomeScreen extends React.Component<Props> {
                 <Text style={styles.welcome}>Welcome to My Coach App!</Text>
                 <Text style={styles.instructions}>To get started, edit App.js</Text>
                 <Text style={styles.instructions}>{instructions}</Text>
-                <Button
+                {/* <Button
                     onPress={()=> navigate('Activity', { name: 'Jane' })}
                     title="開始活動"
                     color="#841584"
                     accessibilityLabel="Learn more about this purple button"
+                    /> */}
+                <Button
+                    onPress={()=> this.setState({ showActivityPopup: true})}
+                    title="開始活動"
+                    color="#841584"
+                    accessibilityLabel="Learn more about this purple button"
                     />
+                {this.state.showActivityPopup ? <ActivityPopup closePopup={this.closePopup}/> : null}
             </View>
             );
     }
