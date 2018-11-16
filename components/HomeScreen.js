@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, Button} from 'react-native';
 import ActivityPopup from './ActivityPopup';
+import {NativeModules} from 'react-native';
+import coreMotionService from '../services/coreMotionService'
 
 const instructions = Platform.select({
     ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -56,7 +58,11 @@ class HomeScreen extends React.Component<Props> {
                     accessibilityLabel="Learn more about this purple button"
                     /> */}
                 <Button
-                    onPress={()=> this.setState({ showActivityPopup: true})}
+                    onPress={()=> {
+                        this.setState({ showActivityPopup: true})
+                        NativeModules.RNHealthKit.authorize();
+                        // console.dir(NativeModules.RNHealthKit); 
+                    }}
                     title="開始活動"
                     color="#841584"
                     accessibilityLabel="Learn more about this purple button"

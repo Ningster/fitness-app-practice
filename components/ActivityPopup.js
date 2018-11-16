@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import {Modal, Text, TouchableHighlight, TouchableOpacity, View, Alert, StyleSheet} from 'react-native';
 // import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {observer} from "mobx-react";
+import { NativeEventEmitter, NativeModules } from 'react-native';
+import coreMotionService from '../services/coreMotionService';
 
 const styles = StyleSheet.create({
     container: {
@@ -104,22 +107,40 @@ const styles = StyleSheet.create({
     },
   });
 
+@observer
 class ActivityPopup extends Component {
-  
-    state = {
-        isPaused: false,
-    }
+    // healthManager = new NativeEventEmitter(NativeModules.RNHealthKit);
+    // subscription = null;
+    // state = {
+    //     isPaused: false,
+    // }
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isPaused: false,
+        };
+        this.healthManager = new NativeEventEmitter(NativeModules.RNHealthKit);
+        this.subscription = null;
+      }
 
     onPause = () => {
         this.setState({isPaused: true});
+        this.subscription.remove();
     }
 
     onPlay = () => {
         this.setState({isPaused: false});
     }
 
+    componentDidMount(){
+        this.subscription = this.healthManager.addListener(
+            'EventStep',
+            // (reminder) => console.log(reminder)
+            coreMotionService.startUpdatingStep
+          );
+    }
     render() {
-    
       this.closePopup = this.props.closePopup;
 
       return (
@@ -137,8 +158,8 @@ class ActivityPopup extends Component {
                     </View>
                     <View style={styles.mainItemContainer}>
                         <View style={styles.mainItem}>
-                            <Text style={{fontSize: 90, color: '#ffffff', fontFamily: 'AvenirNextCondensed-Medium'}}>0.06</Text>
-                            <Text style={{color: '#ffffff'}}>  公里</Text>
+                            <Text style={{fontSize: 90, color: '#ffffff', fontFamily: 'AvenirNextCondensed-Medium'}}>{coreMotionService.stepCount}</Text>
+                            <Text style={{color: '#ffffff'}}>  步</Text>
                         </View>
                     </View>
                     <View style={styles.subItems}>
