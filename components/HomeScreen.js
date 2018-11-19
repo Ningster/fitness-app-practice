@@ -34,9 +34,9 @@ type Props = {};
 
 class HomeScreen extends React.Component<Props> {
 
-    static navigationOptions = {
-      title: '首頁',
-    };
+    // static navigationOptions = {
+    //   title: '首頁',
+    // };
 
     state = {showActivityPopup: false}
 
@@ -45,7 +45,7 @@ class HomeScreen extends React.Component<Props> {
     }
 
     render() {
-        const { navigate } = this.props.navigation;
+        // const { navigate } = this.props.navigation;
         return (
             <View style={styles.container}>
                 <Text style={styles.welcome}>Welcome to My Coach App!</Text>

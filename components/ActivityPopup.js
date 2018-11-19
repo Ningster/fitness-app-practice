@@ -5,6 +5,9 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {observer} from "mobx-react";
 import { NativeEventEmitter, NativeModules } from 'react-native';
 import coreMotionService from '../services/coreMotionService';
+// import stepCounter from '../reducers';
+// import { createStore } from 'redux';
+import { connect } from 'react-redux';
 
 const styles = StyleSheet.create({
     container: {
@@ -122,6 +125,9 @@ class ActivityPopup extends Component {
         };
         this.healthManager = new NativeEventEmitter(NativeModules.RNHealthKit);
         this.subscription = null;
+        // this.store = createStore(stepCounter)
+        // console.log(this.render);
+        // this.store.subscribe(this.render)
       }
 
     onPause = () => {
@@ -133,14 +139,21 @@ class ActivityPopup extends Component {
         this.setState({isPaused: false});
     }
 
-    componentDidMount(){
+    componentDidMount = () => {
         this.subscription = this.healthManager.addListener(
             'EventStep',
             // (reminder) => console.log(reminder)
-            coreMotionService.startUpdatingStep
+            // coreMotionService.startUpdatingStep
+            (reminder) => {
+                // this.store.dispatch({ type: 'UPDATE_STEP', step: reminder })
+                // this.props.onIncrement(reminder);
+                this.props.onIncrement({stepStr: reminder});
+                console.log(`received step event : ${reminder}`);
+            }
           );
     }
-    render() {
+    render = () => {
+      console.log(this.props.value);
       this.closePopup = this.props.closePopup;
 
       return (
@@ -158,7 +171,9 @@ class ActivityPopup extends Component {
                     </View>
                     <View style={styles.mainItemContainer}>
                         <View style={styles.mainItem}>
-                            <Text style={{fontSize: 90, color: '#ffffff', fontFamily: 'AvenirNextCondensed-Medium'}}>{coreMotionService.stepCount}</Text>
+                            {/* <Text style={{fontSize: 90, color: '#ffffff', fontFamily: 'AvenirNextCondensed-Medium'}}>{coreMotionService.stepCount}</Text> */}
+                            {/* <Text style={{fontSize: 90, color: '#ffffff', fontFamily: 'AvenirNextCondensed-Medium'}}>{this.store.getState()}</Text> */}
+                            <Text style={{fontSize: 90, color: '#ffffff', fontFamily: 'AvenirNextCondensed-Medium'}}>{this.props.value}</Text>
                             <Text style={{color: '#ffffff'}}>  步</Text>
                         </View>
                     </View>
@@ -216,4 +231,30 @@ class ActivityPopup extends Component {
     }
   }
   
-  export default ActivityPopup;
+// Which part of the Redux global state does our component want to receive as props?
+function mapStateToProps(state) {
+    return {
+      value: state.stepCounter.step
+    };
+  }
+  
+// Which action creators does it want to receive by props?
+function mapDispatchToProps(dispatch) {
+    return {
+    //   onIncrement: () => dispatch({ type: 'UPDATE_STEP', step: reminder })
+      onIncrement: (step) => dispatch(updateStep(step))
+    };
+  }
+
+function updateStep(step) {
+    return {
+        type: 'UPDATE_STEP',
+        step
+    }
+}
+
+//   export default ActivityPopup;
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(ActivityPopup);
